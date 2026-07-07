@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import saleRoutes from "./routes/saleRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 dotenv.config();          // load variables from .env
 connectDB();              // connect to MongoDB Atlas
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);  // all auth routes start with /api/auth
 app.use("/api/products", productRoutes);
 app.use("/api/sales", saleRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Error handling middleware
 app.use(notFound); // --> unknown routes → 404
