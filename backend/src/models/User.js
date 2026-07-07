@@ -30,11 +30,10 @@ const userSchema = new mongoose.Schema(
 );
 
 // Before saving a user, hash the password (never store plain text)
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next(); // skip if password unchanged
+userSchema.pre("save", async function () {
+  if (!this.isModified("password"))return; // skip if password unchanged
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 // Helper method to check a login password against the hashed one
