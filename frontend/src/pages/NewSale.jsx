@@ -83,6 +83,13 @@ function NewSale() {
     setCart((prev) => prev.filter((i) => i.product !== productId));
   };
 
+  // Empty the whole cart and reset the discount.
+  const clearCart = () => {
+    setCart([]);
+    setDiscount("");
+    setMessage(null);
+  };
+
   // --- Money calculations ---
   const subtotal = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const discountNum = Math.max(0, Number(discount) || 0);
@@ -200,7 +207,17 @@ function NewSale() {
 
         {/* RIGHT: cart */}
         <div className="bg-white rounded-lg shadow p-4">
-          <h2 className="text-lg font-semibold mb-3 text-gray-800">Cart</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-gray-800">Cart</h2>
+            {cart.length > 0 && (
+              <button
+                onClick={clearCart}
+                className="text-sm text-red-600 hover:underline"
+              >
+                Clear Cart
+              </button>
+            )}
+          </div>
 
           {cart.length === 0 ? (
             <p className="text-gray-500 text-sm">
@@ -261,6 +278,7 @@ function NewSale() {
                 value={discount}
                 onChange={(e) => setDiscount(e.target.value)}
                 placeholder="0"
+                disabled={cart.length === 0}
                 className="w-24 px-2 py-1 border border-gray-300 rounded text-right focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
