@@ -8,7 +8,7 @@ import {
   deleteProduct,
   getCategories,
 } from "../controllers/productController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { protect, authorize } from "../middleware/authMiddleware.js";
 import { validate } from "../middleware/validate.js";
 
 const router = express.Router();
@@ -36,11 +36,14 @@ const updateRules = [
   body("isActive").optional().isBoolean().withMessage("isActive must be true or false"),
 ];
 
+// Reads are allowed for any logged-in user (cashiers need them for the POS).
 router.get("/", getProducts);              // GET    /api/products
 router.get("/categories", getCategories);  // GET    /api/products/categories
-router.post("/", createRules, validate, createProduct);   // POST   /api/products
 router.get("/:id", getProduct);            // GET    /api/products/:id
-router.put("/:id", updateRules, validate, updateProduct); // PUT    /api/products/:id
-router.delete("/:id", deleteProduct);      // DELETE /api/products/:id
+
+// Mutations are admin-only.
+router.post("/", authorize("admin"), createRules, validate, createProduct);   // POST   /api/products
+router.put("/:id", authorize("admin"), updateRules, validate, updateProduct); // PUT    /api/products/:id
+router.delete("/:id", authorize("admin"), deleteProduct);                     // DELETE /api/products/:id
 
 export default router;

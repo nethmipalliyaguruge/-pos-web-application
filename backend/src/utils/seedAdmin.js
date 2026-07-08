@@ -5,27 +5,26 @@ import User from "../models/User.js";
 
 dotenv.config();
 
-// Default admin credentials (also put these in your README later)
-const ADMIN = {
-  name: "Admin",
-  email: "admin@pos.com",
-  password: "admin123",
-  role: "admin",
-};
+// Default users (also documented in the README).
+// One manager (admin) and one cashier to demonstrate role-based access.
+const USERS = [
+  { name: "Admin", email: "admin@pos.com", password: "admin123", role: "admin" },
+  { name: "Cashier", email: "cashier@pos.com", password: "cashier123", role: "cashier" },
+];
 
-const seedAdmin = async () => {
+const seedUsers = async () => {
   try {
     await connectDB();
 
-    // Don't create a duplicate if the admin already exists
-    const existing = await User.findOne({ email: ADMIN.email });
-    if (existing) {
-      console.log("ℹ️  Admin user already exists:", ADMIN.email);
-    } else {
-      await User.create(ADMIN); // password gets hashed automatically by the model
-      console.log("✅ Admin user created!");
-      console.log("   Email:", ADMIN.email);
-      console.log("   Password:", ADMIN.password);
+    for (const user of USERS) {
+      // Don't create a duplicate if this user already exists
+      const existing = await User.findOne({ email: user.email });
+      if (existing) {
+        console.log(`ℹ️  User already exists: ${user.email} (${user.role})`);
+      } else {
+        await User.create(user); // password gets hashed automatically by the model
+        console.log(`✅ Created ${user.role}: ${user.email} / ${user.password}`);
+      }
     }
 
     await mongoose.connection.close(); // close DB and exit
@@ -36,4 +35,4 @@ const seedAdmin = async () => {
   }
 };
 
-seedAdmin();
+seedUsers();

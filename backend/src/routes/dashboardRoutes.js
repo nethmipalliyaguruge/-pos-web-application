@@ -1,9 +1,10 @@
 import express from "express";
 import { getSummary } from "../controllers/dashboardController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { protect, authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/summary", protect, getSummary); // GET /api/dashboard/summary
+// Dashboard is a manager view — admin only.
+router.get("/summary", protect, authorize("admin"), getSummary); // GET /api/dashboard/summary
 
 export default router;

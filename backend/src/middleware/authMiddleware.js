@@ -32,3 +32,14 @@ export const protect = async (req, res, next) => {
   // No token at all
   return res.status(401).json({ message: "Not authorized, no token" });
 };
+
+// Restricts a route to specific roles. Must run AFTER `protect` so that
+// req.user is set. Example: router.post("/", protect, authorize("admin"), ...)
+export const authorize = (...roles) => (req, res, next) => {
+  if (!req.user || !roles.includes(req.user.role)) {
+    return res
+      .status(403)
+      .json({ message: "You do not have permission to perform this action" });
+  }
+  next();
+};

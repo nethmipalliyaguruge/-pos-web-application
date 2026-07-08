@@ -21,7 +21,8 @@ function Login() {
       // Call the backend. Returns { token, user } on success.
       const { data } = await api.post("/auth/login", { email, password });
       login(data.user, data.token); // save to context + localStorage
-      navigate("/"); // go to dashboard
+      // Admin → dashboard; cashier → straight to the sales screen.
+      navigate(data.user.role === "admin" ? "/" : "/sales/new");
     } catch (err) {
       // Show the backend's message, or a fallback.
       setError(err.response?.data?.message || "Login failed. Try again.");

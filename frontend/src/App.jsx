@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import NewSale from "./pages/NewSale";
 import SalesHistory from "./pages/SalesHistory";
+import Users from "./pages/Users";
 
 function App() {
   return (
@@ -22,8 +23,32 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/products" element={<Products />} />
+          {/* Admin-only pages (a cashier hitting these is sent to New Sale) */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <Products />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute roles={["admin"]}>
+                <Users />
+              </ProtectedRoute>
+            }
+          />
+          {/* Available to both admin and cashier */}
           <Route path="/sales/new" element={<NewSale />} />
           <Route path="/sales" element={<SalesHistory />} />
         </Route>

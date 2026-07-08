@@ -109,6 +109,11 @@ export const getSales = async (req, res) => {
 
   const filter = {};
 
+  // A cashier only sees their own sales; an admin sees everyone's.
+  if (req.user.role !== "admin") {
+    filter.createdBy = req.user._id;
+  }
+
   // Filter by date range if provided
   if (req.query.startDate || req.query.endDate) {
     filter.createdAt = {};
@@ -137,5 +142,11 @@ export const getSale = async (req, res) => {
   if (!sale) {
     return res.status(404).json({ message: "Sale not found" });
   }
+
+  // A cashier can only view their own sale; an admin can view any.
+  if (req.user.role !== "admin" && String(sale.createdBy._id) !== String(req.user._id)) {
+    return res.status(403).json({ message: "You can only view your own sales" });
+  }
+
   res.json(sale);
 };
