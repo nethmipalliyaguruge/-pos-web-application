@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+
 
 function App() {
   return (
@@ -19,7 +21,7 @@ function App() {
           }
         >
           {/* Temporary placeholders until we build each real page */}
-          <Route path="/" element={<div className="text-2xl">Dashboard 📊</div>} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/products" element={<div className="text-2xl">Products 📦</div>} />
           <Route path="/sales/new" element={<div className="text-2xl">New Sale 🛒</div>} />
           <Route path="/sales" element={<div className="text-2xl">Sales History 🧾</div>} />
