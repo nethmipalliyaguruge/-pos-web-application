@@ -21,20 +21,29 @@ export const createSale = async (req, res) => {
   const saleItems = [];
   const stockUpdates = [];
 
-  // Validate EVERY item before changing anything
+  // Merge duplicate lines: if the same product id appears twice, add the
+  // quantities together. Otherwise each line would be stock-checked on its
+  // own and could slip past the check (overselling).
+  const mergedQuantities = new Map();
   for (const item of items) {
-    const product = await Product.findById(item.product);
+    const id = String(item.product);
+    const qty = Number(item.quantity);
+    mergedQuantities.set(id, (mergedQuantities.get(id) || 0) + qty);
+  }
+
+  // Validate EVERY product before changing anything
+  for (const [productId, quantity] of mergedQuantities) {
+    const product = await Product.findById(productId);
 
     // RULE: product must exist
     if (!product) {
-      return res.status(404).json({ message: `Product not found: ${item.product}` });
+      return res.status(404).json({ message: `Product not found: ${productId}` });
     }
     // RULE: inactive products can't be sold
     if (!product.isActive) {
       return res.status(400).json({ message: `Product is inactive: ${product.name}` });
     }
 
-    const quantity = Number(item.quantity);
     if (!quantity || quantity < 1) {
       return res.status(400).json({ message: `Invalid quantity for ${product.name}` });
     }

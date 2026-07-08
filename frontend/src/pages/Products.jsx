@@ -6,21 +6,22 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-   const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
   // Search + pagination state
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("");           // what's typed in the box
+  const [submittedSearch, setSubmittedSearch] = useState(""); // what we actually query with
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Fetch products whenever the page or search changes.
+  // Fetch products whenever the page or the submitted search changes.
   const fetchProducts = async () => {
     setLoading(true);
     setError("");
     try {
       const { data } = await api.get("/products", {
-        params: { search, page, limit: 5 },
+        params: { search: submittedSearch, page, limit: 5 },
       });
       setProducts(data.products);
       setTotalPages(data.totalPages);
@@ -35,13 +36,24 @@ function Products() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, submittedSearch]);
 
-  // When searching, reset to page 1 and fetch.
+  // Live search: 400ms after the user stops typing, apply the term.
+  // The cleanup cancels the timer if they type again before it fires,
+  // so we only ever send one request per "pause" in typing.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSubmittedSearch(search);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Pressing the Search button / Enter applies the term immediately.
   const handleSearch = (e) => {
     e.preventDefault();
+    setSubmittedSearch(search);
     setPage(1);
-    fetchProducts();
   };
   
   // Delete a product after confirming.
@@ -74,13 +86,25 @@ function Products() {
 
       {/* Search bar */}
       <form onSubmit={handleSearch} className="mb-4 flex gap-2">
-        <input
-          type="text"
-          placeholder="Search by name or SKU..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <div className="relative flex-1">
+          <input
+            type="text"
+            placeholder="Search by name or SKU..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-3 py-2 pr-8 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
         <button
           type="submit"
           className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"

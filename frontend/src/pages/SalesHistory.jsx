@@ -34,24 +34,23 @@ function SalesHistory() {
     }
   };
 
+  // Fetching is driven entirely by this effect, so it always uses the
+  // current dates/page — no stale-closure bugs.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSales();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [startDate, endDate, page]);
 
   const handleFilter = (e) => {
     e.preventDefault();
-    setPage(1);
-    fetchSales();
+    setPage(1); // effect refetches with the chosen dates
   };
 
   const clearFilter = () => {
     setStartDate("");
     setEndDate("");
-    setPage(1);
-    // Fetch after clearing — small timeout lets state settle.
-    setTimeout(fetchSales, 0);
+    setPage(1); // effect refetches with no filter → all sales
   };
 
   // Format an ISO date into something readable.

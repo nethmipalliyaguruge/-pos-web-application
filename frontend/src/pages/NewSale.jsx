@@ -60,6 +60,24 @@ function NewSale() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view, selectedCategory, submittedSearch]);
 
+  // Live search: 400ms after typing stops, show matching products.
+  // Typing switches away from the category tiles; clearing the box
+  // (when not inside a category) returns to the tiles.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (search.trim()) {
+        setSelectedCategory("");
+        setSubmittedSearch(search);
+        setView("products");
+      } else if (view === "products" && !selectedCategory) {
+        setSubmittedSearch("");
+        setView("categories");
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
   // Clicking a category tile.
   const selectCategory = (cat) => {
     setSelectedCategory(cat);
@@ -138,7 +156,7 @@ function NewSale() {
   const discountAmount =
     discountType === "percent"
       ? (subtotal * Math.min(discountInput, 100)) / 100
-      : discountInput;
+      : Math.min(discountInput, subtotal); // never exceed subtotal (total can't go negative)
   const total = Math.max(0, subtotal - discountAmount);
 
   const handleCheckout = async () => {
@@ -181,6 +199,21 @@ function NewSale() {
     }
   };
 
+  // Pick a soft background color for each category (same category → same color).
+  const tileColors = [
+    "bg-blue-50 border-blue-200 hover:border-blue-400",
+    "bg-green-50 border-green-200 hover:border-green-400",
+    "bg-amber-50 border-amber-200 hover:border-amber-400",
+    "bg-purple-50 border-purple-200 hover:border-purple-400",
+    "bg-pink-50 border-pink-200 hover:border-pink-400",
+    "bg-teal-50 border-teal-200 hover:border-teal-400",
+  ];
+  const colorFor = (name) => {
+    // Turn the name into a stable number, then pick a color.
+    const sum = name.split("").reduce((n, ch) => n + ch.charCodeAt(0), 0);
+    return tileColors[sum % tileColors.length];
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6 text-gray-800">New Sale</h1>
@@ -202,13 +235,25 @@ function NewSale() {
         <div className="bg-white rounded-lg shadow p-4">
           {/* Search is always available */}
           <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full px-3 py-2 pr-8 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
             <button className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800">
               Search
             </button>
@@ -226,7 +271,7 @@ function NewSale() {
                     <button
                       key={c}
                       onClick={() => selectCategory(c)}
-                      className="aspect-square flex items-center justify-center text-center p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-400 text-gray-800 font-medium capitalize"
+                      className={`aspect-square flex items-center justify-center text-center p-3 border rounded-lg text-gray-800 font-medium capitalize ${colorFor(c)}`}
                     >
                       {c}
                     </button>
@@ -256,22 +301,24 @@ function NewSale() {
               ) : (
                 <ul className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
                   {products.map((p) => (
-                    <li
-                      key={p._id}
-                      className="py-2 flex items-center justify-between"
-                    >
-                      <div>
-                        <p className="text-gray-800">{p.name}</p>
-                        <p className="text-xs text-gray-500">
-                          Rs. {p.price.toFixed(2)} · {p.stock} in stock
-                        </p>
-                      </div>
+                    <li key={p._id}>
+                      {/* The whole row is one button — click anywhere to add. */}
                       <button
+                        type="button"
                         onClick={() => addToCart(p)}
                         disabled={p.stock === 0}
-                        className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-40"
+                        className="w-full py-2 px-2 flex items-center justify-between text-left rounded hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
                       >
-                        {p.stock === 0 ? "Out" : "Add"}
+                        <div>
+                          <p className="text-gray-800">{p.name}</p>
+                          <p className="text-xs text-gray-500">
+                            Rs. {p.price.toFixed(2)} · {p.stock} in stock
+                          </p>
+                        </div>
+                        {/* Visual "Add" pill (a span, not a nested button) */}
+                        <span className="text-sm bg-blue-600 text-white px-3 py-1 rounded">
+                          {p.stock === 0 ? "Out" : "Add"}
+                        </span>
                       </button>
                     </li>
                   ))}
