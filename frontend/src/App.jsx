@@ -4,6 +4,7 @@ import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
+import NewSale from "./pages/NewSale";
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/products" element={<Products />} />
           {/* Temporary Placeholders*/}
-          <Route path="/sales/new" element={<div className="text-2xl">New Sale 🛒</div>} />
+          <Route path="/sales/new" element={<NewSale />} />
           <Route path="/sales" element={<div className="text-2xl">Sales History 🧾</div>} />
         </Route>
       </Routes>
