@@ -21,6 +21,9 @@ export const getProducts = async (req, res) => {
   if (req.query.status === "active") filter.isActive = true;
   if (req.query.status === "inactive") filter.isActive = false;
 
+  // Optional filter by category
+  if (req.query.category) filter.category = req.query.category;
+
   const total = await Product.countDocuments(filter);
   const products = await Product.find(filter)
     .sort({ createdAt: -1 }) // newest first
@@ -83,4 +86,12 @@ export const deleteProduct = async (req, res) => {
   }
   await product.deleteOne();
   res.json({ message: "Product deleted" });
+};
+
+// @desc   Get the list of distinct product categories
+// @route  GET /api/products/categories
+export const getCategories = async (req, res) => {
+  // .distinct pulls each unique category value used across products
+  const categories = await Product.distinct("category");
+  res.json(categories.sort()); // alphabetical, nicer for the tiles
 };
