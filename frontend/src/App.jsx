@@ -1,23 +1,35 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
 import Login from "./pages/Login";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public page */}
+        {/* Public route — no navbar */}
         <Route path="/login" element={<Login />} />
 
-        {/* Protected page — temporary placeholder until we build the dashboard */}
+        {/* Protected routes — all share the Layout (navbar) */}
         <Route
-          path="/"
           element={
             <ProtectedRoute>
-              <div className="p-8 text-2xl">Dashboard coming soon ✅</div>
+              <Layout />
             </ProtectedRoute>
           }
-        />
+        >
+          {/* Temporary placeholders until we build each real page */}
+          <Route path="/" element={<div className="text-2xl">Dashboard 📊</div>} />
+          <Route path="/products" element={<div className="text-2xl">Products 📦</div>} />
+          <Route path="/sales/new" element={<div className="text-2xl">New Sale 🛒</div>} />
+          <Route path="/sales" element={<div className="text-2xl">Sales History 🧾</div>} />
+        
+          {/* Temporary placeholders until we build each real page */}
+          <Route path="/" element={<div className="text-2xl">Dashboard 📊</div>} />
+          <Route path="/products" element={<div className="text-2xl">Products 📦</div>} />
+          <Route path="/sales/new" element={<div className="text-2xl">New Sale 🛒</div>} />
+          <Route path="/sales" element={<div className="text-2xl">Sales History 🧾</div>} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
