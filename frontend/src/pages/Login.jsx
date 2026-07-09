@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
+import PasswordInput from "../components/PasswordInput";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -62,12 +63,11 @@ function Login() {
         <label className="block mb-2 text-sm font-medium text-gray-700">
           Password
         </label>
-        <input
-          type="password"
+        <PasswordInput
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="w-full mb-6 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          wrapperClassName="mb-6"
         />
 
         <button

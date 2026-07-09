@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api/axios";
+import PasswordInput from "./PasswordInput";
 
 // Modal for creating a new staff account (admin only).
 function UserModal({ onClose, onSaved }) {
@@ -75,14 +76,12 @@ function UserModal({ onClose, onSaved }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
-            <input
-              type="password"
+            <PasswordInput
               name="password"
               value={form.password}
               onChange={handleChange}
               required
               minLength={6}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-xs text-gray-500 mt-1">At least 6 characters.</p>
           </div>
