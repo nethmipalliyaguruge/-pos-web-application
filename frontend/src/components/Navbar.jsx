@@ -19,9 +19,9 @@ function Navbar() {
 
   return (
     <nav className="bg-blue-600 text-white">
-      <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+      <div className="max-w-6xl mx-auto px-4 flex flex-wrap items-center justify-between gap-y-2 py-2 min-h-14">
         {/* Left side: brand + page links */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="font-bold text-lg mr-4">POS</span>
 
           {/* Dashboard + Products are manager-only */}
