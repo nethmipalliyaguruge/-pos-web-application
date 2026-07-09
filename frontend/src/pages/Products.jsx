@@ -9,6 +9,7 @@ function Products() {
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [deletingId, setDeletingId] = useState(null); // which product is being deleted
 
   // Search + pagination state
   const [search, setSearch] = useState("");           // what's typed in the box
@@ -64,11 +65,14 @@ function Products() {
       return;
     }
 
+    setDeletingId(product._id);
     try {
       await api.delete(`/products/${product._id}`);
       fetchProducts(); // refresh the list
     } catch (err) {
       alert(err.response?.data?.message || "Failed to delete product")
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -160,8 +164,12 @@ function Products() {
                       className="text-blue-600 hover:underline">
                       Edit
                     </button>
-                    <button  onClick={() => handleDelete(p)} className="text-red-600 hover:underline">
-                      Delete
+                    <button
+                      onClick={() => handleDelete(p)}
+                      disabled={deletingId === p._id}
+                      className="text-red-600 hover:underline disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {deletingId === p._id ? "Deleting..." : "Delete"}
                     </button>
                   </td>
                 </tr>
@@ -171,26 +179,28 @@ function Products() {
         </div>
       )}
 
-      {/* Pagination controls */}
-      <div className="flex items-center justify-center gap-4 mt-4">
-        <button
-          onClick={() => setPage((p) => p - 1)}
-          disabled={page <= 1}
-          className="px-3 py-1 border rounded disabled:opacity-40"
-        >
-          Prev
-        </button>
-        <span className="text-sm text-gray-600">
-          Page {page} of {totalPages}
-        </span>
-        <button
-          onClick={() => setPage((p) => p + 1)}
-          disabled={page >= totalPages}
-          className="px-3 py-1 border rounded disabled:opacity-40"
-        >
-          Next
-        </button>
-      </div>
+      {/* Pagination controls — only when we actually have a list to page through */}
+      {!loading && !error && products.length > 0 && (
+        <div className="flex items-center justify-center gap-4 mt-4">
+          <button
+            onClick={() => setPage((p) => p - 1)}
+            disabled={page <= 1}
+            className="px-3 py-1 border rounded disabled:opacity-40"
+          >
+            Prev
+          </button>
+          <span className="text-sm text-gray-600">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page >= totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      )}
       {showModal && (
         <ProductModal
           product={editingProduct}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import PasswordInput from "../components/PasswordInput";
@@ -10,8 +10,13 @@ function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
+
+  // If we're already logged in, skip the form and go to the right home page.
+  if (user) {
+    return <Navigate to={user.role === "admin" ? "/" : "/sales/new"} replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // stop the browser from reloading the page

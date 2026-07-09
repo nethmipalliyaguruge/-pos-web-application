@@ -147,26 +147,28 @@ function SalesHistory() {
         </div>
       )}
 
-      {/* Pagination */}
-      <div className="flex items-center justify-center gap-4 mt-4">
-        <button
-          onClick={() => setPage((p) => p - 1)}
-          disabled={page <= 1}
-          className="px-3 py-1 border rounded disabled:opacity-40"
-        >
-          Prev
-        </button>
-        <span className="text-sm text-gray-600">
-          Page {page} of {totalPages}
-        </span>
-        <button
-          onClick={() => setPage((p) => p + 1)}
-          disabled={page >= totalPages}
-          className="px-3 py-1 border rounded disabled:opacity-40"
-        >
-          Next
-        </button>
-      </div>
+      {/* Pagination — only when we actually have sales to page through */}
+      {!loading && !error && sales.length > 0 && (
+        <div className="flex items-center justify-center gap-4 mt-4">
+          <button
+            onClick={() => setPage((p) => p - 1)}
+            disabled={page <= 1}
+            className="px-3 py-1 border rounded disabled:opacity-40"
+          >
+            Prev
+          </button>
+          <span className="text-sm text-gray-600">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page >= totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* Details modal */}
       {selectedSale && (

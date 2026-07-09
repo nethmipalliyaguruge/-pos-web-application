@@ -34,11 +34,11 @@ function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           label="Total Sales Amount"
-          value={formatCurrency(summary.totalSalesAmount)}
+          value={formatCurrency(summary?.totalSalesAmount)}
         />
-        <StatCard label="Number of Sales" value={summary.totalSales} />
-        <StatCard label="Total Products" value={summary.totalProducts} />
-        <StatCard label="Low Stock Items" value={summary.lowStockCount} />
+        <StatCard label="Number of Sales" value={summary?.totalSales ?? 0} />
+        <StatCard label="Total Products" value={summary?.totalProducts ?? 0} />
+        <StatCard label="Low Stock Items" value={summary?.lowStockCount ?? 0} />
       </div>
 
       {/* Low stock list */}
@@ -47,7 +47,7 @@ function Dashboard() {
           Low Stock Products (below 5)
         </h2>
 
-        {summary.lowStockProducts.length === 0 ? (
+        {(summary?.lowStockProducts?.length ?? 0) === 0 ? (
           <p className="text-gray-500 text-sm">
             All products are well stocked. ✅
           </p>
