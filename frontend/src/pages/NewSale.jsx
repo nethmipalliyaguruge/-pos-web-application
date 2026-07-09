@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
+import { formatCurrency } from "../utils/format";
 
 function NewSale() {
   const [products, setProducts] = useState([]);
@@ -181,8 +182,8 @@ function NewSale() {
 
       setMessage({
         type: "success",
-        text: `Sale completed! Invoice ${data.invoiceNumber} — Total Rs. ${data.total.toFixed(
-          2
+        text: `Sale completed! Invoice ${data.invoiceNumber} — Total ${formatCurrency(
+          data.total
         )}`,
       });
 
@@ -312,7 +313,7 @@ function NewSale() {
                         <div>
                           <p className="text-gray-800">{p.name}</p>
                           <p className="text-xs text-gray-500">
-                            Rs. {p.price.toFixed(2)} · {p.stock} in stock
+                            {formatCurrency(p.price)} · {p.stock} in stock
                           </p>
                         </div>
                         {/* Visual "Add" pill (a span, not a nested button) */}
@@ -378,7 +379,7 @@ function NewSale() {
                       </button>
                     </div>
                     <span className="text-sm text-gray-800">
-                      Rs. {(i.price * i.quantity).toFixed(2)}
+                      {formatCurrency(i.price * i.quantity)}
                     </span>
                   </div>
                 </li>
@@ -389,7 +390,7 @@ function NewSale() {
           <div className="border-t pt-3 space-y-2 text-sm">
             <div className="flex justify-between text-gray-700">
               <span>Subtotal</span>
-              <span>Rs. {subtotal.toFixed(2)}</span>
+              <span>{formatCurrency(subtotal)}</span>
             </div>
             <div className="flex justify-between items-center text-gray-700">
               <span>Discount</span>
@@ -423,12 +424,12 @@ function NewSale() {
             {discountType === "percent" && discountAmount > 0 && (
               <div className="flex justify-between text-xs text-gray-500">
                 <span>Discount amount</span>
-                <span>− Rs. {discountAmount.toFixed(2)}</span>
+                <span>− {formatCurrency(discountAmount)}</span>
               </div>
             )}
             <div className="flex justify-between font-bold text-gray-900 text-base">
               <span>Total</span>
-              <span>Rs. {total.toFixed(2)}</span>
+              <span>{formatCurrency(total)}</span>
             </div>
           </div>
 

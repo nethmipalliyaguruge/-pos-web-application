@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
+import { formatCurrency, formatDate } from "../utils/format";
 
 function SalesHistory() {
   const [sales, setSales] = useState([]);
@@ -52,16 +53,6 @@ function SalesHistory() {
     setEndDate("");
     setPage(1); // effect refetches with no filter → all sales
   };
-
-  // Format an ISO date into something readable.
-  const formatDate = (iso) =>
-    new Date(iso).toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
 
   return (
     <div>
@@ -135,7 +126,7 @@ function SalesHistory() {
                   </td>
                   <td className="px-4 py-3 text-gray-600">{s.items.length}</td>
                   <td className="px-4 py-3 text-gray-800">
-                    Rs. {s.total.toFixed(2)}
+                    {formatCurrency(s.total)}
                   </td>
                   <td className="px-4 py-3 text-gray-600">
                     {s.createdBy?.name || "—"}
@@ -212,11 +203,11 @@ function SalesHistory() {
                   <tr key={idx} className="border-b border-gray-100">
                     <td className="py-2 text-gray-800">{item.name}</td>
                     <td className="py-2 text-gray-600">
-                      Rs. {item.price.toFixed(2)}
+                      {formatCurrency(item.price)}
                     </td>
                     <td className="py-2 text-gray-600">{item.quantity}</td>
                     <td className="py-2 text-right text-gray-800">
-                      Rs. {item.lineTotal.toFixed(2)}
+                      {formatCurrency(item.lineTotal)}
                     </td>
                   </tr>
                 ))}
@@ -227,15 +218,15 @@ function SalesHistory() {
             <div className="space-y-1 text-sm">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>Rs. {selectedSale.subtotal.toFixed(2)}</span>
+                <span>{formatCurrency(selectedSale.subtotal)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Discount</span>
-                <span>Rs. {selectedSale.discount.toFixed(2)}</span>
+                <span>{formatCurrency(selectedSale.discount)}</span>
               </div>
               <div className="flex justify-between font-bold text-gray-900 text-base pt-1">
                 <span>Total</span>
-                <span>Rs. {selectedSale.total.toFixed(2)}</span>
+                <span>{formatCurrency(selectedSale.total)}</span>
               </div>
             </div>
           </div>

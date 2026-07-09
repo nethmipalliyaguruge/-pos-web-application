@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
+import { formatCurrency } from "../utils/format";
 
 function Dashboard() {
   const [summary, setSummary] = useState(null);
@@ -33,7 +34,7 @@ function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           label="Total Sales Amount"
-          value={`Rs. ${summary.totalSalesAmount.toFixed(2)}`}
+          value={formatCurrency(summary.totalSalesAmount)}
         />
         <StatCard label="Number of Sales" value={summary.totalSales} />
         <StatCard label="Total Products" value={summary.totalProducts} />

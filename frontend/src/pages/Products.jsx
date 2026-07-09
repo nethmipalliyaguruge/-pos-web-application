@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import ProductModal from "../components/ProductModal";
+import { formatCurrency } from "../utils/format";
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -141,7 +142,7 @@ function Products() {
                   <td className="px-4 py-3 text-gray-600">{p.sku}</td>
                   <td className="px-4 py-3 text-gray-600">{p.category}</td>
                   <td className="px-4 py-3 text-gray-800">
-                    Rs. {p.price.toFixed(2)}
+                    {formatCurrency(p.price)}
                   </td>
                   <td className="px-4 py-3 text-gray-800">{p.stock}</td>
                   <td className="px-4 py-3">
