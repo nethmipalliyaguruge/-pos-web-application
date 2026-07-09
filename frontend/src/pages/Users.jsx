@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import UserModal from "../components/UserModal";
+import ConfirmDialog from "../components/ConfirmDialog";
 import { useAuth } from "../context/AuthContext";
 
 function Users() {
@@ -12,6 +13,9 @@ function Users() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState(null); // user pending delete
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -31,15 +35,19 @@ function Users() {
     fetchUsers();
   }, []);
 
-  const handleDelete = async (u) => {
-    if (!window.confirm(`Delete user "${u.name}"? This cannot be undone.`)) {
-      return;
-    }
+  // Actually delete the user once confirmed in the dialog.
+  const confirmDelete = async () => {
+    if (!confirmTarget) return;
+    setDeleting(true);
+    setDeleteError("");
     try {
-      await api.delete(`/users/${u._id}`);
+      await api.delete(`/users/${confirmTarget._id}`);
+      setConfirmTarget(null);
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to delete user");
+      setDeleteError(err.response?.data?.message || "Failed to delete user");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -81,7 +89,10 @@ function Users() {
                       <span className="text-gray-400 text-xs">You</span>
                     ) : (
                       <button
-                        onClick={() => handleDelete(u)}
+                        onClick={() => {
+                          setConfirmTarget(u);
+                          setDeleteError("");
+                        }}
                         className="text-red-600 hover:underline"
                       >
                         Delete
@@ -97,6 +108,17 @@ function Users() {
 
       {showModal && (
         <UserModal onClose={() => setShowModal(false)} onSaved={fetchUsers} />
+      )}
+
+      {confirmTarget && (
+        <ConfirmDialog
+          title="Delete user"
+          message={`Delete user "${confirmTarget.name}"? This cannot be undone.`}
+          busy={deleting}
+          error={deleteError}
+          onConfirm={confirmDelete}
+          onCancel={() => setConfirmTarget(null)}
+        />
       )}
     </div>
   );

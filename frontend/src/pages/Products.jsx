@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import ProductModal from "../components/ProductModal";
+import ConfirmDialog from "../components/ConfirmDialog";
 import { formatCurrency } from "../utils/format";
 
 function Products() {
@@ -9,7 +10,9 @@ function Products() {
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [deletingId, setDeletingId] = useState(null); // which product is being deleted
+  const [confirmTarget, setConfirmTarget] = useState(null); // product pending delete
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   // Search + pagination state
   const [search, setSearch] = useState("");           // what's typed in the box
@@ -58,21 +61,19 @@ function Products() {
     setPage(1);
   };
   
-  // Delete a product after confirming.
-  const handleDelete = async (product) => {
-    // Simple browser confirm dialog — keeps it simple, no extra modal.
-    if (!window.confirm(`Delete "${product.name}"? This cannot be undone.`)) {
-      return;
-    }
-
-    setDeletingId(product._id);
+  // Actually delete the product once the user confirms in the dialog.
+  const confirmDelete = async () => {
+    if (!confirmTarget) return;
+    setDeleting(true);
+    setDeleteError("");
     try {
-      await api.delete(`/products/${product._id}`);
+      await api.delete(`/products/${confirmTarget._id}`);
+      setConfirmTarget(null);
       fetchProducts(); // refresh the list
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to delete product")
+      setDeleteError(err.response?.data?.message || "Failed to delete product");
     } finally {
-      setDeletingId(null);
+      setDeleting(false);
     }
   };
 
@@ -165,11 +166,13 @@ function Products() {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(p)}
-                      disabled={deletingId === p._id}
-                      className="text-red-600 hover:underline disabled:opacity-40 disabled:cursor-not-allowed"
+                      onClick={() => {
+                        setConfirmTarget(p);
+                        setDeleteError("");
+                      }}
+                      className="text-red-600 hover:underline"
                     >
-                      {deletingId === p._id ? "Deleting..." : "Delete"}
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -206,6 +209,17 @@ function Products() {
           product={editingProduct}
           onClose={() => setShowModal(false)}
           onSaved={fetchProducts}
+        />
+      )}
+
+      {confirmTarget && (
+        <ConfirmDialog
+          title="Delete product"
+          message={`Delete "${confirmTarget.name}"? This cannot be undone.`}
+          busy={deleting}
+          error={deleteError}
+          onConfirm={confirmDelete}
+          onCancel={() => setConfirmTarget(null)}
         />
       )}
     </div>
