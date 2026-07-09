@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import { formatCurrency, formatDate } from "../utils/format";
+import { printInvoice } from "../utils/printInvoice";
 
 function SalesHistory() {
   const [sales, setSales] = useState([]);
@@ -228,6 +229,22 @@ function SalesHistory() {
                 <span>Total</span>
                 <span>{formatCurrency(selectedSale.total)}</span>
               </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setSelectedSale(null)}
+                className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => printInvoice(selectedSale)}
+                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Print Invoice
+              </button>
             </div>
           </div>
         </div>
