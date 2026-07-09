@@ -113,10 +113,17 @@ cp .env.example .env
 > node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 > ```
 
+> **Using a local MongoDB instead of Atlas?** You don't need a cloud account —
+> install MongoDB locally, start it, and set:
+> ```
+> MONGO_URI=mongodb://localhost:27017/pos
+> ```
+> Everything else (seeding, running) works exactly the same.
+
 Seed the default users, then start the server:
 
 ```bash
-npm run seed   # creates the default admin + cashier accounts
+npm run seed   # creates the default users + sample products
 npm run dev    # starts the API on http://localhost:5000
 ```
 
@@ -171,7 +178,7 @@ After running `npm run seed`, you can log in with:
 | ----------------- | ---------------------------------------------- |
 | `npm run dev`     | Start the API with auto-reload (nodemon)       |
 | `npm start`       | Start the API (production style)               |
-| `npm run seed`    | Create the default admin + cashier accounts    |
+| `npm run seed`    | Create the default users + sample products     |
 | `npm test`        | Run the API tests once                         |
 | `npm run test:watch` | Run the tests in watch mode                 |
 
